@@ -14,7 +14,6 @@
   --run: #00e07a; --walk: #3b9eff; --warmup: #f5a623;
   --bg: #0a0a0a; --surface: #141414; --surface2: #1e1e1e;
   --border: rgba(255,255,255,0.08); --text: #f0f0f0; --muted: #666;
-  --spotify: #1DB954;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -22,9 +21,10 @@
 html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
 body { padding-top: var(--safe-top); }
 
-.screen { display: none; min-height: 100vh; flex-direction: column; padding-bottom: calc(60px + var(--safe-bottom)); }
+.screen { display: none; min-height: 100vh; flex-direction: column; padding-bottom: calc(62px + var(--safe-bottom)); }
 .screen.active { display: flex; }
 
+/* TOP BAR */
 .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px 0; flex-shrink: 0; }
 .wo-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
 .gps-pill { display: flex; align-items: center; gap: 5px; font-family: 'DM Mono', monospace; font-size: 10px; padding: 4px 10px; border-radius: 99px; border: 1px solid var(--border); color: var(--muted); }
@@ -34,70 +34,72 @@ body { padding-top: var(--safe-top); }
 .gps-pill.active .gps-dot { background: var(--run); }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-.ring-wrap { position: relative; display: flex; align-items: center; justify-content: center; margin: 16px auto 0; width: 240px; height: 240px; flex-shrink: 0; }
+/* RING */
+.ring-wrap { position: relative; display: flex; align-items: center; justify-content: center; margin: 18px auto 0; width: 240px; height: 240px; flex-shrink: 0; }
 .ring-wrap svg { transform: rotate(-90deg); position: absolute; }
 .ring-center { position: absolute; text-align: center; pointer-events: none; }
 .phase-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
-.time-display { font-family: 'DM Mono', monospace; font-size: 56px; font-weight: 300; color: var(--text); line-height: 1; letter-spacing: -2px; }
-.action-word { font-size: 17px; font-weight: 600; margin-top: 6px; letter-spacing: 0.05em; text-transform: uppercase; transition: color 0.4s; }
+.time-display { font-family: 'DM Mono', monospace; font-size: 58px; font-weight: 300; color: var(--text); line-height: 1; letter-spacing: -2px; }
+.action-word { font-size: 18px; font-weight: 600; margin-top: 6px; letter-spacing: 0.05em; text-transform: uppercase; transition: color 0.4s; }
 .action-word.run { color: var(--run); }
 .action-word.walk { color: var(--walk); }
 .action-word.warmup { color: var(--warmup); }
 .action-word.rest { color: var(--muted); }
 
+/* STATS */
 .stats-row { display: flex; margin: 14px 20px 0; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); flex-shrink: 0; }
 .stat-cell { flex: 1; padding: 10px 6px; text-align: center; background: var(--surface); border-right: 1px solid var(--border); }
 .stat-cell:last-child { border-right: none; }
 .stat-val { font-family: 'DM Mono', monospace; font-size: 18px; color: var(--text); line-height: 1; }
 .stat-lbl { font-size: 10px; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.06em; }
 
+/* DOTS */
 .step-dots { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; padding: 12px 32px 0; max-width: 340px; margin: 0 auto; flex-shrink: 0; }
 .sdot { width: 7px; height: 7px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); transition: all 0.3s; flex-shrink: 0; }
 .sdot.done { background: rgba(0,224,122,0.35); border-color: var(--run); }
 .sdot.cur { background: var(--warmup); border-color: var(--warmup); transform: scale(1.3); }
 
+/* PROGRESS */
 .progress-track { height: 2px; background: var(--surface2); margin: 12px 24px 0; border-radius: 99px; overflow: hidden; flex-shrink: 0; }
 .progress-fill { height: 100%; border-radius: 99px; transition: width 0.6s linear, background 0.4s; }
 
+/* UP NEXT */
 .up-next-bar { margin: 10px 20px 0; padding: 9px 14px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border); font-size: 13px; color: var(--muted); display: none; align-items: center; gap: 8px; flex-shrink: 0; }
 .up-next-bar.show { display: flex; }
 .up-next-bar strong { color: var(--text); font-weight: 500; }
 
-.spotify-now { margin: 8px 20px 0; padding: 9px 14px; border-radius: 10px; background: var(--surface); border: 1px solid rgba(29,185,84,0.25); display: none; align-items: center; gap: 10px; flex-shrink: 0; }
-.spotify-now.show { display: flex; }
-.spotify-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--spotify); animation: blink 1.5s infinite; flex-shrink: 0; }
-.spotify-now-text { font-size: 13px; color: var(--spotify); font-weight: 500; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sp-open-btn { font-size: 12px; color: var(--muted); background: none; border: none; cursor: pointer; text-decoration: underline; flex-shrink: 0; padding: 4px; }
-
-.controls { display: flex; gap: 10px; justify-content: center; align-items: center; padding: 16px 20px 0; flex-shrink: 0; }
-.ctrl-btn { border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600; border-radius: 14px; transition: transform 0.15s; display: flex; align-items: center; gap: 6px; }
+/* CONTROLS */
+.controls { display: flex; gap: 10px; justify-content: center; align-items: center; padding: 18px 20px 0; flex-shrink: 0; }
+.ctrl-btn { border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600; border-radius: 14px; transition: transform 0.15s; }
 .ctrl-btn:active { transform: scale(0.95); }
-.btn-go { background: var(--run); color: #000; font-size: 17px; padding: 15px 40px; }
-.btn-pause { background: var(--surface2); color: var(--text); font-size: 15px; padding: 13px 22px; border: 1px solid var(--border); }
-.btn-stop { background: transparent; color: #ff4444; font-size: 15px; padding: 13px 18px; border: 1px solid rgba(255,68,68,0.3); }
+.btn-go { background: var(--run); color: #000; font-size: 18px; padding: 16px 44px; }
+.btn-pause { background: var(--surface2); color: var(--text); font-size: 15px; padding: 14px 24px; border: 1px solid var(--border); }
+.btn-stop { background: transparent; color: #ff4444; font-size: 15px; padding: 14px 20px; border: 1px solid rgba(255,68,68,0.3); }
 
+/* SUMMARY */
 .summary-overlay { position: fixed; inset: 0; background: var(--bg); display: none; flex-direction: column; z-index: 20; overflow-y: auto; padding-bottom: 40px; }
 .summary-overlay.show { display: flex; }
-.summary-top { padding: 48px 24px 24px; text-align: center; }
-.summary-emoji { font-size: 56px; margin-bottom: 12px; }
-.summary-title { font-size: 26px; font-weight: 700; }
+.summary-top { padding: 52px 24px 24px; text-align: center; }
+.summary-emoji { font-size: 60px; margin-bottom: 12px; }
+.summary-title { font-size: 28px; font-weight: 700; }
 .summary-sub { font-size: 15px; color: var(--muted); margin-top: 6px; }
 .summary-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px; }
 .sum-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px 16px; text-align: center; }
 .sum-card.wide { grid-column: 1 / -1; }
 .sum-val { font-family: 'DM Mono', monospace; font-size: 32px; color: var(--text); line-height: 1; }
-.sum-val.big { font-size: 40px; }
+.sum-val.big { font-size: 42px; }
 .sum-unit { font-size: 13px; color: var(--muted); margin-top: 4px; }
 .sum-lbl { font-size: 11px; color: var(--muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.07em; }
 .pace-breakdown { margin: 12px 20px 0; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
 .pb-title { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; }
 .pb-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
 .pb-row:last-child { border-bottom: none; }
-.pb-type { color: var(--muted); }
-.pb-type.run { color: var(--run); } .pb-type.walk { color: var(--walk); } .pb-type.warmup { color: var(--warmup); }
+.pb-label { color: var(--muted); }
+.pb-label.run { color: var(--run); } .pb-label.walk { color: var(--walk); } .pb-label.warmup { color: var(--warmup); }
 .pb-val { font-family: 'DM Mono', monospace; color: var(--text); }
 .summary-btn { margin: 16px 20px 0; background: var(--run); color: #000; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 16px; padding: 16px; border: none; border-radius: 14px; cursor: pointer; }
 
+/* SCHEDULE */
 .page-header { padding: 20px 20px 0; flex-shrink: 0; }
 .page-title { font-size: 24px; font-weight: 600; }
 .page-sub { font-size: 14px; color: var(--muted); margin-top: 4px; }
@@ -122,35 +124,7 @@ body { padding-top: var(--safe-top); }
 .iv-dur { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--muted); }
 .start-fab { margin: 14px 20px 0; background: var(--run); color: #000; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 16px; padding: 15px; border: none; border-radius: 14px; cursor: pointer; flex-shrink: 0; }
 
-.sp-header { padding: 20px 20px 0; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-.sp-logo { width: 26px; height: 26px; flex-shrink: 0; }
-.sp-title { font-size: 22px; font-weight: 600; }
-.sp-body { flex: 1; overflow-y: auto; padding: 16px 20px 20px; }
-
-.sel-pl-bar { padding: 12px 14px; border-radius: 12px; background: rgba(29,185,84,0.1); border: 1px solid rgba(29,185,84,0.3); display: none; align-items: center; gap: 10px; margin-bottom: 20px; }
-.sel-pl-bar.show { display: flex; }
-.sel-pl-info { flex: 1; min-width: 0; }
-.sel-pl-name { font-size: 13px; font-weight: 600; color: var(--spotify); }
-.sel-pl-hint { font-size: 11px; color: rgba(29,185,84,0.7); margin-top: 2px; }
-.sel-pl-clear { background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; padding: 4px; line-height: 1; flex-shrink: 0; }
-
-.paste-label { font-size: 13px; color: var(--muted); margin-bottom: 8px; display: block; }
-.paste-area { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none; resize: none; height: 76px; display: block; }
-.paste-area:focus { border-color: var(--spotify); }
-.paste-area::placeholder { color: var(--muted); }
-.paste-btn { margin-top: 10px; width: 100%; background: var(--spotify); border: none; border-radius: 12px; padding: 14px; color: #000; font-weight: 700; font-size: 16px; font-family: 'DM Sans', sans-serif; cursor: pointer; display: block; }
-.paste-btn:active { opacity: 0.85; }
-.paste-msg { margin-top: 10px; font-size: 13px; display: none; }
-.paste-msg.show { display: block; }
-.paste-msg.ok { color: var(--run); }
-.paste-msg.err { color: #ff4444; }
-
-.how-to { margin-top: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
-.how-to-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px; }
-.how-step { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 13px; color: var(--muted); line-height: 1.5; }
-.how-step:last-child { margin-bottom: 0; }
-.step-num { width: 20px; height: 20px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--text); flex-shrink: 0; margin-top: 1px; }
-
+/* HISTORY */
 .hist-list { flex: 1; overflow-y: auto; padding: 14px 20px; display: flex; flex-direction: column; gap: 10px; }
 .hist-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
 .hist-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
@@ -162,7 +136,9 @@ body { padding-top: var(--safe-top); }
 .hist-mval { font-family: 'DM Mono', monospace; font-size: 15px; color: var(--text); }
 .hist-mlbl { font-size: 10px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.04em; }
 .hist-empty { text-align: center; color: var(--muted); padding: 60px 0; font-size: 15px; line-height: 1.6; }
+.hist-clear { margin: 0 20px 14px; background: transparent; border: 1px solid rgba(255,68,68,0.3); color: #ff4444; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px; border-radius: 10px; cursor: pointer; }
 
+/* NAV */
 .nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,10,0.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; padding-bottom: var(--safe-bottom); z-index: 100; }
 .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 0; background: none; border: none; cursor: pointer; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 10px; letter-spacing: 0.04em; transition: color 0.15s; }
 .nav-btn.active { color: var(--run); }
@@ -177,6 +153,7 @@ body { padding-top: var(--safe-top); }
     <div class="wo-label" id="woLabel">Week 1 · Workout 1</div>
     <div class="gps-pill" id="gpsPill"><div class="gps-dot"></div><span id="gpsLabel">GPS off</span></div>
   </div>
+
   <div class="ring-wrap">
     <svg width="240" height="240" viewBox="0 0 240 240" aria-hidden="true">
       <circle cx="120" cy="120" r="108" fill="none" stroke="#1e1e1e" stroke-width="11"/>
@@ -190,23 +167,24 @@ body { padding-top: var(--safe-top); }
       <div class="action-word rest" id="actionWord">Select workout</div>
     </div>
   </div>
+
   <div class="stats-row">
     <div class="stat-cell"><div class="stat-val" id="statDist">-</div><div class="stat-lbl">km</div></div>
     <div class="stat-cell"><div class="stat-val" id="statPace">-</div><div class="stat-lbl">min/km</div></div>
     <div class="stat-cell"><div class="stat-val" id="statSpeed">-</div><div class="stat-lbl">km/h</div></div>
   </div>
+
   <div class="step-dots" id="stepDots"></div>
   <div class="progress-track"><div class="progress-fill" id="pFill" style="width:0%;background:var(--run)"></div></div>
-  <div class="up-next-bar" id="upNextBar"><span style="color:var(--muted)">next</span><strong id="upNextTxt"></strong></div>
-  <div class="spotify-now" id="spotifyNow">
-    <div class="spotify-dot"></div>
-    <div class="spotify-now-text" id="spotifyNowText">Playing on Spotify</div>
-    <button class="sp-open-btn" onclick="openPlaylist()">Open</button>
+
+  <div class="up-next-bar" id="upNextBar">
+    <span>Next:</span><strong id="upNextTxt"></strong>
   </div>
+
   <div class="controls">
-    <button class="ctrl-btn btn-go" id="goBtn" onclick="handleGo()">&#9654; Go</button>
-    <button class="ctrl-btn btn-pause" id="pauseBtn" onclick="handlePause()" style="display:none">&#9646;&#9646; Pause</button>
-    <button class="ctrl-btn btn-stop" id="stopBtn" onclick="handleStop()" style="display:none">&#9632; Stop</button>
+    <button class="ctrl-btn btn-go" id="goBtn" onclick="handleGo()">Go</button>
+    <button class="ctrl-btn btn-pause" id="pauseBtn" onclick="handlePause()" style="display:none">Pause</button>
+    <button class="ctrl-btn btn-stop" id="stopBtn" onclick="handleStop()" style="display:none">Stop</button>
   </div>
 </div>
 
@@ -218,7 +196,11 @@ body { padding-top: var(--safe-top); }
     <div class="summary-sub" id="sumSub"></div>
   </div>
   <div class="summary-stats">
-    <div class="sum-card wide"><div class="sum-val big" id="sumDist">0.00</div><div class="sum-unit">kilometres</div><div class="sum-lbl">Total distance</div></div>
+    <div class="sum-card wide">
+      <div class="sum-val big" id="sumDist">0.00</div>
+      <div class="sum-unit">kilometres</div>
+      <div class="sum-lbl">Total distance</div>
+    </div>
     <div class="sum-card"><div class="sum-val" id="sumTime">-</div><div class="sum-unit">duration</div><div class="sum-lbl">Time</div></div>
     <div class="sum-card"><div class="sum-val" id="sumAvgPace">-</div><div class="sum-unit">min/km avg</div><div class="sum-lbl">Pace</div></div>
     <div class="sum-card"><div class="sum-val" id="sumRunDist">-</div><div class="sum-unit">km running</div><div class="sum-lbl">Run distance</div></div>
@@ -237,34 +219,10 @@ body { padding-top: var(--safe-top); }
   <button class="start-fab" onclick="startFromSchedule()">Start this workout</button>
 </div>
 
-<!-- MUSIC -->
-<div class="screen" id="musicScreen">
-  <div class="sp-header">
-    <svg class="sp-logo" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-    <div class="sp-title">Music</div>
-  </div>
-  <div class="sp-body">
-    <div class="sel-pl-bar" id="selPlBar">
-      <div class="sel-pl-info"><div class="sel-pl-name" id="selPlName">My playlist</div><div class="sel-pl-hint">Opens in Spotify when you tap Go</div></div>
-      <button class="sel-pl-clear" onclick="clearPlaylist()">&#215;</button>
-    </div>
-    <label class="paste-label" for="pasteArea">Paste your Spotify playlist link</label>
-    <textarea class="paste-area" id="pasteArea" placeholder="https://open.spotify.com/playlist/..."></textarea>
-    <button class="paste-btn" onclick="savePlaylist()">Save playlist</button>
-    <div class="paste-msg" id="pasteMsg"></div>
-    <div class="how-to">
-      <div class="how-to-title">How to get your playlist link</div>
-      <div class="how-step"><div class="step-num">1</div><span>Open Spotify and find your running playlist</span></div>
-      <div class="how-step"><div class="step-num">2</div><span>Tap the <strong style="color:var(--text)">&#8943;</strong> menu next to the playlist name</span></div>
-      <div class="how-step"><div class="step-num">3</div><span>Tap <strong style="color:var(--text)">Share &rarr; Copy link to playlist</strong></span></div>
-      <div class="how-step"><div class="step-num">4</div><span>Come back here, paste it above, and tap Save</span></div>
-    </div>
-  </div>
-</div>
-
 <!-- HISTORY -->
 <div class="screen" id="historyScreen">
   <div class="page-header"><div class="page-title">History</div><div class="page-sub">Your completed workouts</div></div>
+  <button class="hist-clear" id="clearBtn" onclick="clearHistory()" style="display:none;margin-top:14px;">Clear all history</button>
   <div class="hist-list" id="histList"></div>
 </div>
 
@@ -276,9 +234,6 @@ body { padding-top: var(--safe-top); }
   <button class="nav-btn" id="nav-schedule" onclick="showScreen('scheduleScreen')">
     <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Schedule
   </button>
-  <button class="nav-btn" id="nav-music" onclick="showScreen('musicScreen')">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 11.5c2.5-1 5.5-.8 7.5.5M8 14c2-.8 4.5-.6 6 .4M9 8.5c3-1.2 6.5-1 9 .5" stroke-width="1.5"/></svg>Music
-  </button>
   <button class="nav-btn" id="nav-history" onclick="showScreen('historyScreen')">
     <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>History
   </button>
@@ -288,8 +243,11 @@ body { padding-top: var(--safe-top); }
 // PROGRAM
 function seg(m,s,t){return {type:t,dur:m*60+s};}
 function wu(){return seg(5,0,'warmup');}
-function rep(n,...s){var r=[];for(var i=0;i<n;i++)s.forEach(function(x){r.push(x);});return r;}
-
+function rep(n){
+  var args=Array.prototype.slice.call(arguments,1),r=[];
+  for(var i=0;i<n;i++)args.forEach(function(x){r.push(x);});
+  return r;
+}
 var P={
   1:[
     [wu()].concat(rep(6,seg(1,0,'run'),seg(1,30,'walk'))),
@@ -327,15 +285,13 @@ var P={
 };
 
 // STATE
-var selWeek=1, selWo=0;
-var intervals=[], curIdx=0, secsLeft=0, totalSecs=0;
-var running=false, paused=false, tmr=null;
-var playlist=null, history=[];
-var watchId=null, lastPos=null, totalDist=0, distByType={run:0,walk:0,warmup:0}, speedKmh=0;
+var selWeek=1,selWo=0;
+var intervals=[],curIdx=0,secsLeft=0,totalSecs=0;
+var running=false,paused=false,tmr=null;
+var history=[];
+var watchId=null,lastPos=null,totalDist=0,distByType={run:0,walk:0,warmup:0},speedKmh=0;
 var wakeLock=null;
-
-try { playlist=JSON.parse(localStorage.getItem('c25k_pl')||'null'); } catch(e){}
-try { history=JSON.parse(localStorage.getItem('c25k_hist')||'[]'); } catch(e){}
+try{history=JSON.parse(localStorage.getItem('c25k_hist')||'[]');}catch(e){}
 
 // UTILS
 function ft(s){var m=Math.floor(s/60),sec=s%60;return m+':'+(sec<10?'0':'')+sec;}
@@ -355,6 +311,7 @@ function haversine(a,b,c,d){
 function fmtPace(mps){
   if(!mps||mps<0.3)return '-';
   var mpk=1000/(mps*60),m=Math.floor(mpk),s=Math.round((mpk-m)*60);
+  if(s===60){m++;s=0;}
   return m+':'+(s<10?'0':'')+s;
 }
 function fmtDist(m){return (m/1000).toFixed(2);}
@@ -366,7 +323,7 @@ function startGPS(){
   watchId=navigator.geolocation.watchPosition(
     function(pos){
       setGPS('active');
-      var lat=pos.coords.latitude, lon=pos.coords.longitude, spd=pos.coords.speed;
+      var lat=pos.coords.latitude,lon=pos.coords.longitude,spd=pos.coords.speed;
       if(lastPos&&running&&!paused){
         var d=haversine(lastPos.lat,lastPos.lon,lat,lon);
         if(d<150){
@@ -376,7 +333,7 @@ function startGPS(){
         }
       }
       lastPos={lat:lat,lon:lon};
-      speedKmh=spd!=null?spd*3.6:speedKmh;
+      if(spd!=null)speedKmh=spd*3.6;
       updateStatsUI();
     },
     function(){setGPS('off');},
@@ -400,9 +357,15 @@ function updateStatsUI(){
 
 // WAKE LOCK
 function grabWakeLock(){
-  try{if('wakeLock' in navigator)navigator.wakeLock.request('screen').then(function(wl){wakeLock=wl;});}catch(e){}
+  try{
+    if('wakeLock' in navigator){
+      navigator.wakeLock.request('screen').then(function(wl){wakeLock=wl;}).catch(function(){});
+    }
+  }catch(e){}
 }
-function dropWakeLock(){if(wakeLock){try{wakeLock.release();}catch(e){}wakeLock=null;}}
+function dropWakeLock(){
+  if(wakeLock){try{wakeLock.release();}catch(e){}wakeLock=null;}
+}
 
 // RING
 var CIRC=678.58;
@@ -438,7 +401,6 @@ function updateTimerUI(){
   if(next){unb.classList.add('show');document.getElementById('upNextTxt').textContent=tn(next.type)+' — '+ft(next.dur);}
   else{unb.classList.remove('show');}
   renderDots();
-  document.getElementById('woLabel').textContent='Week '+selWeek+' · Workout '+(selWo+1);
 }
 
 // TICK
@@ -458,16 +420,8 @@ function tick(){
 function speak(t){
   if(!window.speechSynthesis)return;
   window.speechSynthesis.cancel();
-  var msg=t==='RUN'?'Run!':t==='WALK'?'Walk.':'Start your warm-up walk.';
-  var u=new SpeechSynthesisUtterance(msg);u.rate=1.1;
-  window.speechSynthesis.speak(u);
-}
-
-// PLAYLIST
-function openPlaylist(){
-  if(!playlist)return;
-  window.location.href=playlist.uri;
-  setTimeout(function(){window.open(playlist.url,'_blank');},400);
+  var u=new SpeechSynthesisUtterance(t==='RUN'?'Run!':t==='WALK'?'Walk.':'Start your warm-up walk.');
+  u.rate=1.1;window.speechSynthesis.speak(u);
 }
 
 // CONTROLS
@@ -486,15 +440,11 @@ function handleGo(){
   document.getElementById('goBtn').style.display='none';
   document.getElementById('pauseBtn').style.display='';
   document.getElementById('stopBtn').style.display='';
+  document.getElementById('woLabel').textContent='Week '+selWeek+' · Workout '+(selWo+1);
   clearInterval(tmr);tmr=setInterval(tick,1000);
   speak(tn(intervals[0].type));
   updateTimerUI();updateStatsUI();
   startGPS();grabWakeLock();
-  if(playlist){
-    openPlaylist();
-    document.getElementById('spotifyNowText').textContent=playlist.name;
-    document.getElementById('spotifyNow').classList.add('show');
-  }
 }
 
 function handlePause(){
@@ -514,7 +464,6 @@ function handleStop(){
   var aw=document.getElementById('actionWord');aw.textContent='Select workout';aw.className='action-word rest';
   document.getElementById('pFill').style.width='0%';
   document.getElementById('upNextBar').classList.remove('show');
-  document.getElementById('spotifyNow').classList.remove('show');
   document.getElementById('stepDots').innerHTML='';
   document.getElementById('statDist').textContent='-';
   document.getElementById('statPace').textContent='-';
@@ -522,7 +471,7 @@ function handleStop(){
   updateRing(0,'warmup');
 }
 
-// FINISH + SUMMARY
+// FINISH
 function finishWorkout(){
   clearInterval(tmr);running=false;
   stopGPS();dropWakeLock();
@@ -538,6 +487,7 @@ function finishWorkout(){
   showSummary();saveHistory();
 }
 
+// SUMMARY
 function showSummary(){
   var avgMps=totalSecs>0?totalDist/totalSecs:0;
   var runTime=0;intervals.forEach(function(iv){if(iv.type==='run')runTime+=iv.dur;});
@@ -551,31 +501,42 @@ function showSummary(){
   var pb=document.getElementById('paceBreakdown');
   var rows='';
   ['warmup','run','walk'].forEach(function(t){
-    if((distByType[t]||0)>1)rows+='<div class="pb-row"><span class="pb-type '+t+'">'+tn(t)+'</span><span class="pb-val">'+fmtDist(distByType[t])+' km</span></div>';
+    if((distByType[t]||0)>1){
+      rows+='<div class="pb-row"><span class="pb-label '+t+'">'+tn(t)+'</span><span class="pb-val">'+fmtDist(distByType[t])+' km</span></div>';
+    }
   });
   if(rows){pb.innerHTML='<div class="pb-title">Distance by phase</div>'+rows;pb.style.display='';}
-  else pb.style.display='none';
+  else{pb.style.display='none';}
   document.getElementById('summaryOverlay').classList.add('show');
 }
-
 function hideSummary(){document.getElementById('summaryOverlay').classList.remove('show');}
 
 // HISTORY
 function saveHistory(){
   var avgMps=totalSecs>0?totalDist/totalSecs:0;
   history.unshift({date:new Date().toISOString(),week:selWeek,wo:selWo+1,dist:totalDist,time:totalSecs,runDist:distByType.run||0,avgMps:avgMps});
-  if(history.length>50)history=history.slice(0,50);
+  if(history.length>100)history=history.slice(0,100);
   try{localStorage.setItem('c25k_hist',JSON.stringify(history));}catch(e){}
 }
-
+function clearHistory(){
+  if(!confirm('Clear all workout history?'))return;
+  history=[];
+  try{localStorage.removeItem('c25k_hist');}catch(e){}
+  renderHistory();
+}
 function renderHistory(){
   var el=document.getElementById('histList');
-  if(!history.length){el.innerHTML='<div class="hist-empty">No workouts yet.<br>Complete your first run to see it here.</div>';return;}
+  var cb=document.getElementById('clearBtn');
+  if(!history.length){
+    el.innerHTML='<div class="hist-empty">No workouts yet.<br>Complete your first run to see it here.</div>';
+    cb.style.display='none';return;
+  }
+  cb.style.display='';
   el.innerHTML='';
   history.forEach(function(h){
     var d=new Date(h.date).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
     var c=document.createElement('div');c.className='hist-card';
-    c.innerHTML='<div class="hist-top"><div class="hist-wo">Week '+h.week+' · Workout '+h.wo+'</div><div class="hist-date">'+d+'</div></div>'
+    c.innerHTML='<div class="hist-top"><div class="hist-wo">Week '+h.week+' &middot; Workout '+h.wo+'</div><div class="hist-date">'+d+'</div></div>'
       +'<div class="hist-metrics">'
       +'<div class="hist-m"><div class="hist-mval">'+fmtDist(h.dist)+'</div><div class="hist-mlbl">km</div></div>'
       +'<div class="hist-m"><div class="hist-mval">'+ft(h.time)+'</div><div class="hist-mlbl">time</div></div>'
@@ -584,35 +545,6 @@ function renderHistory(){
       +'</div>';
     el.appendChild(c);
   });
-}
-
-// PLAYLIST
-function savePlaylist(){
-  var raw=document.getElementById('pasteArea').value.trim();
-  var msg=document.getElementById('pasteMsg');
-  msg.className='paste-msg';
-  var match=raw.match(/playlist\/([A-Za-z0-9]+)/);
-  if(!match){msg.textContent="That doesn't look like a valid Spotify link — try again.";msg.className='paste-msg err show';return;}
-  var id=match[1];
-  playlist={name:'My running playlist',uri:'spotify:playlist:'+id,url:'https://open.spotify.com/playlist/'+id};
-  try{localStorage.setItem('c25k_pl',JSON.stringify(playlist));}catch(e){}
-  document.getElementById('pasteArea').value='';
-  renderSelBar();
-  msg.textContent='Playlist saved! It will open when you tap Go.';msg.className='paste-msg ok show';
-  setTimeout(function(){msg.className='paste-msg';},3000);
-}
-
-function clearPlaylist(){
-  playlist=null;
-  try{localStorage.removeItem('c25k_pl');}catch(e){}
-  document.getElementById('selPlBar').classList.remove('show');
-}
-
-function renderSelBar(){
-  var bar=document.getElementById('selPlBar');
-  if(!playlist){bar.classList.remove('show');return;}
-  bar.classList.add('show');
-  document.getElementById('selPlName').textContent=playlist.name;
 }
 
 // SCHEDULE
@@ -638,7 +570,6 @@ function renderSchedule(){
     il.appendChild(d);
   });
 }
-
 function startFromSchedule(){showScreen('timerScreen');}
 
 // NAV
@@ -646,16 +577,14 @@ function showScreen(id){
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
-  var map={timerScreen:'nav-timer',scheduleScreen:'nav-schedule',musicScreen:'nav-music',historyScreen:'nav-history'};
+  var map={timerScreen:'nav-timer',scheduleScreen:'nav-schedule',historyScreen:'nav-history'};
   var nb=document.getElementById(map[id]);if(nb)nb.classList.add('active');
   if(id==='scheduleScreen')renderSchedule();
   if(id==='historyScreen')renderHistory();
-  if(id==='musicScreen')renderSelBar();
 }
 
 // INIT
 renderSchedule();
-renderSelBar();
 </script>
 </body>
 </html>
