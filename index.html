@@ -139,20 +139,19 @@
   .sel-pl-name { font-size: 13px; font-weight: 500; color: var(--spotify); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sel-pl-hint { font-size: 11px; color: rgba(29,185,84,0.7); margin-top: 1px; }
   .sel-pl-clear { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 4px; }
-  .search-box { margin: 12px 20px 0; display: flex; gap: 8px; flex-shrink: 0; }
-  .search-box input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none; }
-  .search-box input:focus { border-color: var(--spotify); }
-  .search-box input::placeholder { color: var(--muted); }
-  .sp-search-btn { background: var(--spotify); border: none; border-radius: 12px; padding: 12px 18px; color: #000; font-weight: 600; cursor: pointer; font-size: 15px; font-family: 'DM Sans', sans-serif; }
-  .sp-results { flex: 1; overflow-y: auto; padding: 12px 20px; display: flex; flex-direction: column; gap: 8px; padding-bottom: 90px; }
-  .sp-pl-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); cursor: pointer; transition: all 0.15s; }
-  .sp-pl-row.picked { border-color: var(--spotify); background: rgba(29,185,84,0.08); }
-  .sp-pl-img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; background: var(--surface2); flex-shrink: 0; }
-  .sp-pl-info { flex: 1; min-width: 0; }
-  .sp-pl-name { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sp-pl-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .sp-check { color: var(--spotify); font-size: 20px; flex-shrink: 0; }
-  .sp-msg { font-size: 14px; color: var(--muted); padding: 16px 0; text-align: center; }
+  .paste-box { margin: 16px 20px 0; flex-shrink: 0; }
+  .paste-box textarea { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none; resize: none; height: 80px; }
+  .paste-box textarea:focus { border-color: var(--spotify); }
+  .paste-box textarea::placeholder { color: var(--muted); }
+  .paste-btn { margin-top: 10px; width: 100%; background: var(--spotify); border: none; border-radius: 12px; padding: 14px; color: #000; font-weight: 700; cursor: pointer; font-size: 16px; font-family: 'DM Sans', sans-serif; }
+  .paste-btn:active { opacity: 0.85; }
+  .paste-hint { margin-top: 20px; padding: 16px; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); }
+  .paste-hint-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+  .paste-hint-step { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; font-size: 13px; color: var(--muted); line-height: 1.4; }
+  .paste-hint-step:last-child { margin-bottom: 0; }
+  .step-num { width: 20px; height: 20px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--text); flex-shrink: 0; margin-top: 1px; }
+  .paste-error { margin-top: 10px; font-size: 13px; color: #ff4444; display: none; }
+  .paste-error.show { display: block; }
 
   /* HISTORY SCREEN */
   #historyScreen { background: var(--bg); }
@@ -304,12 +303,17 @@
     </div>
     <button class="sel-pl-clear" onclick="clearPlaylist()">✕</button>
   </div>
-  <div class="search-box">
-    <input type="text" id="spInput" placeholder="Search playlists…" onkeydown="if(event.key==='Enter')doSearch()">
-    <button class="sp-search-btn" id="spSearchBtn" onclick="doSearch()">Search</button>
-  </div>
-  <div class="sp-results" id="spResults">
-    <div class="sp-msg">Search for a running or workout playlist above.</div>
+  <div class="paste-box">
+    <textarea id="spPasteInput" placeholder="Paste your Spotify playlist link here…&#10;e.g. https://open.spotify.com/playlist/…"></textarea>
+    <button class="paste-btn" onclick="handlePasteLink()">Save playlist</button>
+    <div class="paste-error" id="pasteError">That doesn't look like a valid Spotify playlist link — try again.</div>
+    <div class="paste-hint">
+      <div class="paste-hint-title">How to get your playlist link</div>
+      <div class="paste-hint-step"><div class="step-num">1</div><span>Open Spotify and find your running playlist</span></div>
+      <div class="paste-hint-step"><div class="step-num">2</div><span>Tap the <strong style="color:var(--text)">···</strong> menu next to the playlist</span></div>
+      <div class="paste-hint-step"><div class="step-num">3</div><span>Tap <strong style="color:var(--text)">Share → Copy link</strong></span></div>
+      <div class="paste-hint-step"><div class="step-num">4</div><span>Come back here and paste it above</span></div>
+    </div>
   </div>
 </div>
 
@@ -648,7 +652,6 @@ function openCurrentPlaylist(){
 function clearPlaylist(){
   selectedPlaylist=null;
   document.getElementById('selPlBar').classList.remove('show');
-  renderSpResults(searchResultsCache);
 }
 function renderSelBar(){
   if(!selectedPlaylist){document.getElementById('selPlBar').classList.remove('show');return;}
@@ -658,52 +661,26 @@ function renderSelBar(){
   if(selectedPlaylist.image){img.src=selectedPlaylist.image;img.style.display='';}
   else{img.style.display='none';}
 }
-function renderSpResults(results){
-  searchResultsCache=results||[];
-  const el=document.getElementById('spResults');
-  if(!results||!results.length){el.innerHTML='<div class="sp-msg">No results. Try a different search.</div>';return;}
-  el.innerHTML='';
-  results.forEach(pl=>{
-    const row=document.createElement('div');
-    row.className='sp-pl-row'+(selectedPlaylist&&selectedPlaylist.uri===pl.uri?' picked':'');
-    row.onclick=()=>{selectedPlaylist=pl;renderSelBar();renderSpResults(searchResultsCache);};
-    const tracks=pl.tracks?`${pl.tracks} tracks`:'';
-    const owner=pl.owner?`by ${pl.owner}`:'';
-    const meta=[owner,tracks].filter(Boolean).join(' · ');
-    row.innerHTML=`
-      ${pl.image?`<img class="sp-pl-img" src="${pl.image}" alt="" onerror="this.style.display='none'">`:'<div class="sp-pl-img" style="display:flex;align-items:center;justify-content:center;font-size:22px;">🎵</div>'}
-      <div class="sp-pl-info">
-        <div class="sp-pl-name">${pl.name}</div>
-        ${meta?`<div class="sp-pl-meta">${meta}</div>`:''}
-      </div>
-      ${selectedPlaylist&&selectedPlaylist.uri===pl.uri?'<span class="sp-check">✓</span>':''}`;
-    el.appendChild(row);
-  });
-}
-async function doSearch(){
-  const query=document.getElementById('spInput').value.trim();if(!query)return;
-  const btn=document.getElementById('spSearchBtn');btn.disabled=true;btn.textContent='…';
-  document.getElementById('spResults').innerHTML='<div class="sp-msg">Searching…</div>';
-  try{
-    const response=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',max_tokens:1000,
-        system:`Search Spotify for playlists and return ONLY a JSON array, no markdown.
-Each item: {"name":string,"owner":string,"tracks":number,"uri":"spotify:playlist:ID","url":"https://open.spotify.com/playlist/ID","image":string}
-Up to 6 results. image = cover art URL or "".`,
-        messages:[{role:'user',content:`Search Spotify playlists: "${query}". JSON array only.`}],
-        mcp_servers:[{type:'url',url:'https://mcp-gateway-external-pilot.spotify.net/mcp',name:'spotify'}]
-      })
-    });
-    const data=await response.json();
-    const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
-    const results=JSON.parse(text.replace(/```json|```/g,'').trim());
-    renderSpResults(results);
-  }catch(e){
-    document.getElementById('spResults').innerHTML='<div class="sp-msg" style="color:#ff4444;">Search failed — try again.</div>';
-  }
-  btn.disabled=false;btn.textContent='Search';
+  const raw=document.getElementById('spPasteInput').value.trim();
+  const err=document.getElementById('pasteError');
+  err.classList.remove('show');
+  // Extract playlist ID from various Spotify URL formats
+  const match=raw.match(/playlist\/([A-Za-z0-9]+)/);
+  if(!match){err.classList.add('show');return;}
+  const id=match[1];
+  selectedPlaylist={
+    name:'My running playlist',
+    uri:'spotify:playlist:'+id,
+    url:'https://open.spotify.com/playlist/'+id,
+    image:''
+  };
+  renderSelBar();
+  document.getElementById('spPasteInput').value='';
+  // Show confirmation
+  err.style.color='var(--run)';
+  err.textContent='✓ Playlist saved! It will open when you hit Go.';
+  err.classList.add('show');
+  setTimeout(()=>{err.classList.remove('show');err.style.color='#ff4444';err.textContent="That doesn't look like a valid Spotify playlist link — try again.";},3000);
 }
 
 // ── SCHEDULE ──
